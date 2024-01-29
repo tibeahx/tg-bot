@@ -17,20 +17,20 @@ func handleStart(b *Bot, msg *tgbotapi.Message) error {
 	return nil
 }
 
-func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, client coincap.CoincapClient, bot *Bot) {
+func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, client coincap.CoincapClient, bot *Bot) error {
 	response := &models.Response{}
 
 	resp, err := coincap.GetAssetPrice(client, asset, cfg)
 	if err != nil {
 		log.Printf("error getting %s price: %v", asset.Name, err)
 		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, fmt.Sprintf("error getting %s price", asset.Name)))
-		return
+		return nil
 	}
 
 	if err := json.Unmarshal(resp, &response); err != nil {
 		log.Printf("failed to unmarshal response into struct: %v", err)
 		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, "failed to unmarshal response into struct"))
-		return
+		return nil
 	}
 
 	if response.Data.PriceUsd != "" {
@@ -39,4 +39,5 @@ func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, 
 		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, responseMessage))
 	}
 
+	return nil
 }
