@@ -3,7 +3,6 @@ package coincap
 import (
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -39,37 +38,32 @@ func NewCoincapClient() *CoincapClient {
 	}
 }
 
-func InitConfig() *Config {
+func InitConfig() (*Config, error) {
 	dir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	cfgPath := filepath.Join(dir, "config.yaml")
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	cfgFile, err := os.ReadFile(cfgPath)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	cfg := &Config{}
 	if err := yaml.Unmarshal(cfgFile, cfg); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return cfg
+	return cfg, nil
 }
 
 func setHeaders(apiKey string) http.Header {
 	headers := http.Header{
-		"User-Agent":    {"Mozilla/5.0 (iPhone; CPU iPhone OS 15_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6 Mobile/15E148 Safari/604.1"},
 		"Accept":        {"*/*"},
 		"Connection":    {"Keep-alive"},
-		"Authorization": {fmt.Sprintf("BEARER %s", apiKey)},
+		"Authorization": {fmt.Sprintf("Bearer %s", apiKey)},
 	}
 
 	return headers
@@ -80,7 +74,7 @@ func GetAssetPrice(client CoincapClient, asset models.Asset, cfg Config) ([]byte
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	request.Header = setHeaders(cfg.APIkey)

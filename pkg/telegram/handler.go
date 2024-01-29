@@ -10,9 +10,11 @@ import (
 	"github.com/smokinjoints/crypto-price-bot/pkg/models"
 )
 
-func handleStart(b *Bot, msg *tgbotapi.Message) {
+func handleStart(b *Bot, msg *tgbotapi.Message) error {
 	responseMessage := "Available assets to check: sol, eth, btc"
 	b.Send(tgbotapi.NewMessage(msg.Chat.ID, responseMessage))
+
+	return nil
 }
 
 func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, client coincap.CoincapClient, bot *Bot) {
@@ -20,20 +22,20 @@ func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, 
 
 	resp, err := coincap.GetAssetPrice(client, asset, cfg)
 	if err != nil {
-		log.Printf("error getting %s price: %v", asset.Id, err)
-		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, fmt.Sprintf("error getting %s price", asset.Id)))
+		log.Printf("error getting %s price: %v", asset.Name, err)
+		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, fmt.Sprintf("error getting %s price", asset.Name)))
 		return
 	}
 
-	if err := json.Unmarshal(resp, response); err != nil {
+	if err := json.Unmarshal(resp, &response); err != nil {
 		log.Printf("failed to unmarshal response into struct: %v", err)
 		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, "failed to unmarshal response into struct"))
 		return
 	}
 
-	if len(response.Data) > 0 {
-		priceUsd := response.Data[0].PriceUsd
-		responseMessage := fmt.Sprintf("%s price: %s", asset.Id, priceUsd)
+	if response.Data.PriceUsd != "" {
+		priceUsd := response.Data.PriceUsd
+		responseMessage := fmt.Sprintf("%s price: %s", asset.Name, priceUsd)
 		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, responseMessage))
 	}
 

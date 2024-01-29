@@ -39,24 +39,22 @@ func Start(b *Bot, cfg coincap.Config, client coincap.CoincapClient) {
 		for update := range updates {
 			if update.Message != nil && update.Message.IsCommand() {
 				var asset models.Asset
-				switch update.Message.Command() {
+				switch update.Message.Text {
 				case "/start":
 					handleStart(b, update.Message)
 
 				case "/btc":
-					asset = models.Asset{Id: "bitcoin"}
+					asset = models.Asset{Name: "bitcoin"}
+					handleAsset(asset, update.Message, cfg, client, b)
 
 				case "/eth":
-					asset = models.Asset{Id: "ethereum"}
+					asset = models.Asset{Name: "ethereum"}
+					handleAsset(asset, update.Message, cfg, client, b)
 
 				case "/sol":
-					asset = models.Asset{Id: "solana"}
-
-				default:
-					asset = models.Asset{Id: update.Message.Command()}
+					asset = models.Asset{Name: "solana"}
+					handleAsset(asset, update.Message, cfg, client, b)
 				}
-
-				handleAsset(asset, update.Message, cfg, client, b)
 			}
 		}
 	}

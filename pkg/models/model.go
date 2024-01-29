@@ -2,7 +2,6 @@ package models
 
 type Asset struct {
 	Name string
-	Id   string
 }
 
 type AssetData struct {
@@ -20,6 +19,6 @@ type AssetData struct {
 }
 
 type Response struct {
-	Data      []AssetData `json:"data"`
-	Timestamp int64       `json:"timestamp"`
+	Data      AssetData `json:"data"`
+	Timestamp int64     `json:"timestamp"`
 }

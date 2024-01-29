@@ -8,8 +8,13 @@ import (
 )
 
 func main() {
-	cfg := coincap.InitConfig()
+	cfg, err := coincap.InitConfig()
+	if err != nil {
+		log.Println(err)
+	}
+
 	client := coincap.NewCoincapClient()
+
 	bot, err := telegram.NewBot(cfg)
 	if err != nil {
 		log.Fatal(err)
