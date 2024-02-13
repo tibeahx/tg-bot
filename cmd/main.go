@@ -8,5 +8,5 @@ import (
 func main() {
 	client := coincap.NewCoincapClient()
 
-	go telegram.Start(*client)
+	telegram.Start(*client)
 }
