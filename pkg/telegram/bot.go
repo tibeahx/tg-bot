@@ -32,12 +32,12 @@ func Send(msg tgbotapi.Chattable) error {
 	return err
 }
 
-func Start(cfg coincap.Config, client coincap.CoincapClient) {
+func Start(client coincap.CoincapClient) {
 	updateConfig := tgbotapi.NewUpdate(0)
 	updateConfig.Timeout = 60
 
 	for {
-		updates := bot.GetUpdatesChan(updCfg)
+		updates := bot.GetUpdatesChan(updateConfig)
 
 		for update := range updates {
 			if update.Message != nil && update.Message.IsCommand() {
