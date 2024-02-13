@@ -6,57 +6,63 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/smokinjoints/crypto-price-bot/pkg/models"
-	"gopkg.in/yaml.v3"
 )
 
 type CoincapClient struct {
 	httpClient http.Client
 }
 
-type Config struct {
-	APIkey    string `yaml:"api_key"`
-	APIurl    string `yaml:"api_url"`
-	BotAPIkey string `yaml:"bot_api_key"`
+type CoincapConfig struct {
+	APIurl    string
+	BotAPIkey string
+	APIkey    string
 }
+
+type Config struct {
+	Coincap CoincapConfig
+}
+
+var once sync.Once
 
 func NewCoincapClient() *CoincapClient {
-	return &CoincapClient{
-		httpClient: http.Client{
-			Transport: &http.Transport{
-				Dial: (&net.Dialer{
-					Timeout:   5 * time.Second,
-					KeepAlive: 30 * time.Second,
-				}).Dial,
+	var client *CoincapClient
+
+	once.Do(func() {
+		client = &CoincapClient{
+			httpClient: http.Client{
+				Transport: &http.Transport{
+					Dial: (&net.Dialer{
+						Timeout:   5 * time.Second,
+						KeepAlive: 30 * time.Second,
+					}).Dial,
+				},
+				Timeout: 10 * time.Second,
 			},
-			Timeout: 10 * time.Second,
-		},
-	}
+		}
+	})
+
+	return client
 }
 
-func InitConfig() (*Config, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
+func ReadConfig() *Config {
+	var config *Config
 
-	cfgPath := filepath.Join(dir, "config.yaml")
+	once.Do(func() {
+		config = &Config{
+			Coincap: CoincapConfig{
+				APIurl:    os.Getenv("API_URL"),
+				APIkey:    os.Getenv("API_KEY"),
+				BotAPIkey: os.Getenv("BOT_API_KEY"),
+			},
+		}
+	})
 
-	cfgFile, err := os.ReadFile(cfgPath)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg := &Config{}
-	if err := yaml.Unmarshal(cfgFile, cfg); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
+	return config
 }
 
 func setHeaders(apiKey string) http.Header {
@@ -70,14 +76,16 @@ func setHeaders(apiKey string) http.Header {
 }
 
 func GetAssetPrice(client CoincapClient, asset models.Asset, cfg Config) ([]byte, error) {
-	url := cfg.APIurl + "/" + asset.Name
+	ReadConfig()
+
+	url := cfg.Coincap.APIurl + "/" + asset.Name
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	request.Header = setHeaders(cfg.APIkey)
+	setHeaders(cfg.Coincap.APIkey)
 
 	resp, err := client.httpClient.Do(request)
 	if err != nil {

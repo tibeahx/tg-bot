@@ -10,14 +10,14 @@ import (
 	"github.com/smokinjoints/crypto-price-bot/pkg/models"
 )
 
-func handleStart(b *Bot, msg *tgbotapi.Message) error {
+func handleStart(msg *tgbotapi.Message) error {
 	responseMessage := "Available assets to check: sol, eth, btc"
-	b.Send(tgbotapi.NewMessage(msg.Chat.ID, responseMessage))
+	bot.Send(tgbotapi.NewMessage(msg.Chat.ID, responseMessage))
 
 	return nil
 }
 
-func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, client coincap.CoincapClient, bot *Bot) error {
+func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, client coincap.CoincapClient, bot *tgbotapi.BotAPI) error {
 	response := &models.Response{}
 
 	resp, err := coincap.GetAssetPrice(client, asset, cfg)
