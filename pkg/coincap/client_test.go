@@ -60,6 +60,7 @@ func TestGetAssetPrice(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 				if req.URL.Path == "/bitcoin" {
@@ -70,9 +71,8 @@ func TestGetAssetPrice(t *testing.T) {
 			defer server.Close()
 
 			client := NewCoincapClient()
-			cfg := tt.cfg
 
-			resp, err := GetAssetPrice(*client, tt.asset, cfg)
+			resp, err := GetAssetPrice(*client, tt.asset)
 			if err != nil {
 				if tt.expectedError == "" {
 					t.Errorf("unexpected error: %v", err)

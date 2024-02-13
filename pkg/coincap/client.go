@@ -75,17 +75,16 @@ func setHeaders(apiKey string) http.Header {
 	return headers
 }
 
-func GetAssetPrice(client CoincapClient, asset models.Asset, cfg Config) ([]byte, error) {
+func GetAssetPrice(client CoincapClient, asset models.Asset) ([]byte, error) {
 	ReadConfig()
-
-	url := cfg.Coincap.APIurl + "/" + asset.Name
+	url := ReadConfig().Coincap.APIurl + "/" + asset.Name
 
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	setHeaders(cfg.Coincap.APIkey)
+	setHeaders(ReadConfig().Coincap.APIkey)
 
 	resp, err := client.httpClient.Do(request)
 	if err != nil {

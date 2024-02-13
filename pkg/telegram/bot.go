@@ -33,8 +33,8 @@ func Send(msg tgbotapi.Chattable) error {
 }
 
 func Start(cfg coincap.Config, client coincap.CoincapClient) {
-	updCfg := tgbotapi.NewUpdate(0)
-	updCfg.Timeout = 60
+	updateConfig := tgbotapi.NewUpdate(0)
+	updateConfig.Timeout = 60
 
 	for {
 		updates := bot.GetUpdatesChan(updCfg)
@@ -48,15 +48,15 @@ func Start(cfg coincap.Config, client coincap.CoincapClient) {
 
 				case "/btc":
 					asset = models.Asset{Name: "bitcoin"}
-					handleAsset(asset, update.Message, cfg, client, bot)
+					handleAsset(asset, update.Message, client, bot)
 
 				case "/eth":
 					asset = models.Asset{Name: "ethereum"}
-					handleAsset(asset, update.Message, cfg, client, bot)
+					handleAsset(asset, update.Message, client, bot)
 
 				case "/sol":
 					asset = models.Asset{Name: "solana"}
-					handleAsset(asset, update.Message, cfg, client, bot)
+					handleAsset(asset, update.Message, client, bot)
 				}
 			}
 		}

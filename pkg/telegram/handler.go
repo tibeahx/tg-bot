@@ -17,10 +17,10 @@ func handleStart(msg *tgbotapi.Message) error {
 	return nil
 }
 
-func handleAsset(asset models.Asset, msg *tgbotapi.Message, cfg coincap.Config, client coincap.CoincapClient, bot *tgbotapi.BotAPI) error {
+func handleAsset(asset models.Asset, msg *tgbotapi.Message, client coincap.CoincapClient, bot *tgbotapi.BotAPI) error {
 	response := &models.Response{}
 
-	resp, err := coincap.GetAssetPrice(client, asset, cfg)
+	resp, err := coincap.GetAssetPrice(client, asset)
 	if err != nil {
 		log.Printf("error getting %s price: %v", asset.Name, err)
 		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, fmt.Sprintf("error getting %s price", asset.Name)))
