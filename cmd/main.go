@@ -6,9 +6,7 @@ import (
 )
 
 func main() {
-	cfg := coincap.ReadConfig()
-
 	client := coincap.NewCoincapClient()
 
-	go telegram.Start(*cfg, *client)
+	go telegram.Start(*client)
 }
