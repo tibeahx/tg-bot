@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"log"
-	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/smokinjoints/crypto-price-bot/pkg/coincap"
@@ -11,18 +10,14 @@ import (
 
 var bot *tgbotapi.BotAPI
 
-var once sync.Once
-
 func GetTelegramBot(apiKey string) *tgbotapi.BotAPI {
-	once.Do(func() {
-		botAPI, err := tgbotapi.NewBotAPI(apiKey)
-		if err != nil {
-			log.Fatal(err)
-		}
+	botAPI, err := tgbotapi.NewBotAPI(apiKey)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		botAPI.Debug = true
-		bot = botAPI
-	})
+	botAPI.Debug = true
+	bot = botAPI
 
 	return bot
 }

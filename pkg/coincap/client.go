@@ -30,23 +30,17 @@ type Config struct {
 var once sync.Once
 
 func NewCoincapClient() *CoincapClient {
-	var client *CoincapClient
-
-	once.Do(func() {
-		client = &CoincapClient{
-			httpClient: http.Client{
-				Transport: &http.Transport{
-					Dial: (&net.Dialer{
-						Timeout:   5 * time.Second,
-						KeepAlive: 30 * time.Second,
-					}).Dial,
-				},
-				Timeout: 10 * time.Second,
+	return &CoincapClient{
+		httpClient: http.Client{
+			Transport: &http.Transport{
+				Dial: (&net.Dialer{
+					Timeout:   5 * time.Second,
+					KeepAlive: 30 * time.Second,
+				}).Dial,
 			},
-		}
-	})
-
-	return client
+			Timeout: 10 * time.Second,
+		},
+	}
 }
 
 func ReadConfig() *Config {
