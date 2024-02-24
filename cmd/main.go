@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/smokinjoints/crypto-price-bot/pkg/coincap"
-	"github.com/smokinjoints/crypto-price-bot/pkg/telegram"
+	"github.com/tibeahx/tg-bot/pkg/coincap"
 )
 
 func main() {
 	client := coincap.NewCoincapClient()
 
-	telegram.Start(*client)
+	bot.Start(*client)
 }

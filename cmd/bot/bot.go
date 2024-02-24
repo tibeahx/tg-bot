@@ -4,8 +4,8 @@ import (
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/smokinjoints/crypto-price-bot/pkg/coincap"
-	"github.com/smokinjoints/crypto-price-bot/pkg/models"
+	"github.com/tibeahx/tg-bot/pkg/coincap"
+	"github.com/tibeahx/tg-bot/pkg/models"
 )
 
 var bot *tgbotapi.BotAPI
@@ -40,18 +40,22 @@ func Start(client coincap.CoincapClient) {
 				switch update.Message.Text {
 				case "/start":
 					handleStart(update.Message)
+					continue
 
 				case "/btc":
 					asset = models.Asset{Name: "bitcoin"}
 					handleAsset(asset, update.Message, client, bot)
+					continue
 
 				case "/eth":
 					asset = models.Asset{Name: "ethereum"}
 					handleAsset(asset, update.Message, client, bot)
+					continue
 
 				case "/sol":
 					asset = models.Asset{Name: "solana"}
 					handleAsset(asset, update.Message, client, bot)
+					continue
 				}
 			}
 		}

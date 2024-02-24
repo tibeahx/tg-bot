@@ -18,14 +18,14 @@ func handleStart(msg *tgbotapi.Message) error {
 }
 
 func handleAsset(asset models.Asset, msg *tgbotapi.Message, client coincap.CoincapClient, bot *tgbotapi.BotAPI) error {
-	response := &models.Response{}
-
 	resp, err := coincap.GetAssetPrice(client, asset)
 	if err != nil {
 		log.Printf("error getting %s price: %v", asset.Name, err)
 		bot.Send(tgbotapi.NewMessage(msg.Chat.ID, fmt.Sprintf("error getting %s price", asset.Name)))
 		return nil
 	}
+
+	response := &models.Response{}
 
 	if err := json.Unmarshal(resp, &response); err != nil {
 		log.Printf("failed to unmarshal response into struct: %v", err)

@@ -10,11 +10,12 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/smokinjoints/crypto-price-bot/pkg/models"
+	"github.com/tibeahx/tg-bot/models"
 )
 
 type CoincapClient struct {
 	httpClient http.Client
+	config     Config
 }
 
 type CoincapConfig struct {
@@ -27,9 +28,7 @@ type Config struct {
 	Coincap CoincapConfig
 }
 
-var once sync.Once
-
-func NewCoincapClient() *CoincapClient {
+func NewCoincapClient(cfg Config) *CoincapClient {
 	return &CoincapClient{
 		httpClient: http.Client{
 			Transport: &http.Transport{
@@ -46,6 +45,7 @@ func NewCoincapClient() *CoincapClient {
 func ReadConfig() *Config {
 	var config *Config
 
+	var once sync.Once
 	once.Do(func() {
 		config = &Config{
 			Coincap: CoincapConfig{
@@ -70,7 +70,6 @@ func setHeaders(apiKey string) http.Header {
 }
 
 func GetAssetPrice(client CoincapClient, asset models.Asset) ([]byte, error) {
-	ReadConfig()
 	url := ReadConfig().Coincap.APIurl + "/" + asset.Name
 
 	request, err := http.NewRequest("GET", url, nil)
